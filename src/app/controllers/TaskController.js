@@ -30,6 +30,41 @@ class TaskController {
 
     return res.json(newTask);
   }
+
+  async update(req, res) {
+    const taskId = req.params.id;
+
+    const task = await Task.findByPk(taskId);
+
+    if (!task) {
+      return res.status(400).json({ error: 'Tarefa não existe! ' });
+    }
+
+    if (task.user_id !== req.userId) {
+      return res.status(401).json({ error: 'Não autorizado' });
+    }
+    await task.update({ check: true });
+
+    return res.json(task);
+  }
+
+  async delete(req, res) {
+    const taskId = req.params.id;
+
+    const task = await Task.findByPk(taskId);
+
+    if (!task) {
+      return res.status(400).json({ error: 'Tarefa não existe! ' });
+    }
+
+    if (task.user_id !== req.userId) {
+      return res.status(401).json({ error: 'Não autorizado' });
+    }
+
+    await task.destroy();
+
+    return res.json({ message: 'Deletado com sucesso! ' });
+  }
 }
 
 export default new TaskController();
